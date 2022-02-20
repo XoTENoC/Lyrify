@@ -1,13 +1,23 @@
-const http = require('http');
+var express = require('express');
+const WebSocket = require('ws');
 
-const hostname = '127.0.0.1';
-const port = 3000;
+const app = express()
+const port = 3000
 
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.sendFile(__dirname + '/views/index.html');
-});
+app.get('/', (req, res) => {
+    res.statusCode = 200;
+    res.sendFile(__dirname + '/views/index.html');
+})
 
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
-});
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`)
+})
+
+const socket = new WebSocket("ws://10.0.5.104:4444/remote");
+
+socket.onopen = () => {
+};
+
+socket.onmessage = (data) => {
+  console.log(data);
+};
