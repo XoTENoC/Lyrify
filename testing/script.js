@@ -1,5 +1,5 @@
 var socket;
-var host = "172.20.10.14";
+var host = "10.0.5.104";
 var port = "4444";
 var slide_number = 0;
 var pesentation_name;

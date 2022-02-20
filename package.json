@@ -1,0 +1,19 @@
+{
+  "name": "lyrify",
+  "version": "1.0.0",
+  "description": "Converting Propreseter lyrics to Xml for resolume",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/XoTENoC/Lyrify.git"
+  },
+  "author": "Nathaniel Chang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/XoTENoC/Lyrify/issues"
+  },
+  "homepage": "https://github.com/XoTENoC/Lyrify#readme"
+}
