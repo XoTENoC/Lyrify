@@ -7,6 +7,22 @@
     <title>Document</title>
 </head>
 <body>
+    <h1>Web text viewer</h1>
     <div class="slide_text"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+        function onLoad()
+        {
+
+            socket = io.connect();
+
+            socket.onmessage = (data) => {
+                console.log(data);
+            };
+
+        }
+    </script>
 </body>
 </html>
