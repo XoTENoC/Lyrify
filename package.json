@@ -18,6 +18,7 @@
   "homepage": "https://github.com/XoTENoC/Lyrify#readme",
   "dependencies": {
     "express": "^4.17.3",
+    "node-osc": "^6.1.14",
     "socket.io": "^4.4.1"
   }
 }

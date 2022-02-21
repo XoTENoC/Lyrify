@@ -1,10 +1,14 @@
 var express = require('express');
 const io = require('socket.io');
+const { Client, Message } = require('node-osc');
 
 const WebSocket = require('ws');
 
 const app = express()
 const port = 3000
+
+// setting up osc
+const client = new Client('192.168.86.25', 7000);
 
 app.get('/', (req, res) => {
     res.statusCode = 200;
@@ -15,7 +19,7 @@ app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
 
-const socket = new WebSocket("ws://10.0.5.104:4444/remote");
+const socket = new WebSocket("ws://192.168.86.25:4444/remote");
 
 socket.onopen = () => {
 };
@@ -31,6 +35,18 @@ socket.onmessage = function (event) {
             console.log(slide_number);
             x = msg.presentation.presentationSlideGroups[0].groupSlides[slide_number].slideText;
             // document.getElementById("slide_text").innerHTML = x;
+
+            // assigning what the message is to resolume
+            var message = new Message('/composition/layers/4/clips/1/video/source/textgenerator/text/params/lines');
+            message.append(x);
+
+            // sending the message to resolume
+            client.send(message, (err) => {
+                if (err) {
+                    console.error(new Error(err));
+                }
+            });
+
             console.log(x);
             break;
         case "presentationTriggerIndex":
