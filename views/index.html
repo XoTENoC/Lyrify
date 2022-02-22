@@ -5,24 +5,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-</head>
-<body>
-    <h1>Web text viewer</h1>
-    <div class="slide_text"></div>
-
     <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
 
-    <script>
-        function onLoad()
-        {
+        var socket = null;
+        
+        function onLoad(){
+            document.getElementById("send_server").addEventListener("click", function (e) {
+                sending_to_server();
+            });
 
             socket = io.connect();
+        }
 
-            socket.onmessage = (data) => {
-                console.log(data);
-            };
-
+        function sending_to_server(){
+            socket.emit("config_test", "this is from client")
         }
     </script>
+</head>
+<body onLoad="onLoad();">
+    <h1>Web text viewer</h1>
+    <div class="slide_text"></div>
+    
+    <button id="send_server">Send</button>
+
 </body>
 </html>
