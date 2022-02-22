@@ -19,21 +19,23 @@
 
             socket = io.connect();
 
+            // asking the server to send data that is already there
             socket.on('connect', function() {
                 socket.emit("load_request");
-                console.log("request sent");
             })
 
+            // adding the placeholder information of the data that is already there
             socket.on("data", function(ip_data) {
                 ip_information = ip_data;
-                console.log(ip_information);
+
+                document.getElementById("proPresenterIP").placeholder = ip_data.proPresenterIP;
+                document.getElementById("proPresenterPORT").placeholder = ip_data.proPresenterPORT;
+                document.getElementById("resolumeIP").placeholder = ip_data.resolumeIP;
+                document.getElementById("resolumePORT").placeholder = ip_data.resolumePORT;
             })
         }
 
-        function sending_to_server(){
-            socket.emit("config_test", array);
-        }
-
+        // send the user input data to the server.
         function sending_ip_information(){
             let ip_information = {};
 
