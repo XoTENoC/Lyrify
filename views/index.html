@@ -52,22 +52,39 @@
     </script>
 </head>
 <body onLoad="onLoad();">
-    <h1>Web Text Viewer Config</h1>
-    <div class="slide_text"></div>
     
     <div class="container">
 
-        <label for="proPresenterIP" class="form-label">ProPresenter Ip:</label>
-        <input class="form-control" type="text" id="proPresenterIP" value="" size="30" /><br />
+        <h1>Web Text Viewer Config</h1>
 
-        <label for="proPresenterPORT" class="form-label">ProPresenter Port:</label>
-        <input class="form-control" type="text" id="proPresenterPORT" value="" size="30" /><br />
+        <hr>
 
-        <label for="resolumeIP" class="form-label">Resolume IP:</label>
-        <input class="form-control" type="text" id="resolumeIP" value="" size="30" /><br />
+        <div class="row">
 
-        <label for="resolumePORT" class="form-label">Resolume Port:</label>
-        <input class="form-control" type="text" id="resolumePORT" value="" size="30" /><br />
+            <div class="col-auto">
+                <label for="proPresenterIP" class="form-label">ProPresenter Ip:</label>
+                <input class="form-control" type="text" id="proPresenterIP" value="" size="30" /><br />
+            </div>
+
+            <div class="col-auto">
+                <label for="proPresenterPORT" class="form-label">ProPresenter Port:</label>
+                <input class="form-control" type="text" id="proPresenterPORT" value="" size="30" /><br />
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-auto">
+                <label for="resolumeIP" class="form-label">Resolume IP:</label>
+                <input class="form-control" type="text" id="resolumeIP" value="" size="30" /><br />
+            </div>
+
+            <div class="col-auto">
+                <label for="resolumePORT" class="form-label">Resolume Port:</label>
+                <input class="form-control" type="text" id="resolumePORT" value="" size="30" /><br />
+            </div>
+        </div>
 
         <button class="btn btn-primary" id="send_server">Send</button>
     </div>
