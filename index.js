@@ -8,11 +8,8 @@ const fs = require("fs");
 
 const JSONdatafile = "presentationbridge-data.json";
 
-// vaiables for ProPresenter, resolume ip and port.
-var proPresenter_ip;
-var proPresenter_port;
-var resolume_ip;
-var resolume_port;
+// onbject for ProPresenter, resolume ip and port.
+let ip_information_local = {}
 
 
 // const { Client, Message } = require('node-osc');
@@ -22,12 +19,15 @@ const WebSocket = require('ws');
 //contecting to client (webview)
 io.sockets.on("connection", function(socket) {
 
-    socket.on("config_test", function(test_info) {
-        proPresenter_ip = test_info[0];
-        proPresenter_port = test_info[1];
-        resolume_ip = test_info[2];
-        resolume_port = test_info[3];
+    socket.on("ip_update", function(ip_information) {
+
+        ip_information_local = ip_information;
         saveFile();
+        
+    })
+
+    socket.on("load_request", function() {
+        io.emit("data", ip_information_local);
     })
 
 });
@@ -38,7 +38,45 @@ io.sockets.on("connection", function(socket) {
 
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/views/index.html');
-});
+})
+
+
+function loadFile() //loads settings on first load of app
+{   
+    try
+    {
+        let rawdata = fs.readFileSync(JSONdatafile); 
+        let myJson = JSON.parse(rawdata); 
+
+        ip_information_local = myJson.ip_information;
+    }
+    catch (error)
+    {
+        
+    }
+}
+
+function saveFile() //saves settings to a local storage file for later recalling
+{
+    var myJson = {
+        ip_information: ip_information_local
+    };
+
+    console.log(myJson);
+
+    fs.writeFileSync(JSONdatafile, JSON.stringify(myJson), "utf8", function(error) {
+        if (error)
+        { 
+          console.log('error: ' + error);
+        }
+        else
+        {
+          console.log('file saved');
+        }
+    });
+}
+
+// Listening to for the client
 
 let listenPort = defaultListenPort;
 
@@ -57,49 +95,6 @@ if (parseInt(cli_listenPort) !== 'NaN')
 http.listen(listenPort, function () {
     console.log("listening on *:" + listenPort);
 });
-
-
-
-function loadFile() //loads settings on first load of app
-{   
-    try
-    {
-        let rawdata = fs.readFileSync(JSONdatafile); 
-        let myJson = JSON.parse(rawdata); 
-
-        proPresenter_ip = myJson.proPresenter_ip;
-        proPresenter_port = myJson.proPresenter_port;
-        resolume_ip = myJson.resolume_ip;
-        resolume_port = myJson.resolume_port;
-    }
-    catch (error)
-    {
-        
-    }
-}
-
-function saveFile() //saves settings to a local storage file for later recalling
-{
-    var myJson = {
-        proPresenter_ip: proPresenter_ip,
-        proPresenter_port: proPresenter_port,
-        resolume_ip: resolume_ip,
-        resolume_port: resolume_port
-    };
-
-    console.log(myJson);
-
-    fs.writeFileSync(JSONdatafile, JSON.stringify(myJson), "utf8", function(error) {
-        if (error)
-        { 
-          console.log('error: ' + error);
-        }
-        else
-        {
-          console.log('file saved');
-        }
-    });
-}
 
 
 
@@ -159,3 +154,5 @@ function saveFile() //saves settings to a local storage file for later recalling
 // function get_slide() {
 //     emit({ action: "presentationCurrent" });
 // }
+
+loadFile();

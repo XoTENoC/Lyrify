@@ -9,27 +9,55 @@
     <script type="text/javascript">
 
         var socket = null;
-
-        let array = ['192.168.10.10', '4000','192.168.10.10', '4000'];
+        let ip_information = {};
         
+        // when website loads
         function onLoad(){
             document.getElementById("send_server").addEventListener("click", function (e) {
-                sending_to_server();
+                sending_ip_information();
             });
 
             socket = io.connect();
+
+            socket.on('connect', function() {
+                socket.emit("load_request");
+                console.log("request sent");
+            })
+
+            socket.on("data", function(ip_data) {
+                ip_information = ip_data;
+                console.log(ip_information);
+            })
         }
 
         function sending_to_server(){
             socket.emit("config_test", array);
         }
+
+        function sending_ip_information(){
+            let ip_information = {};
+
+            ip_information.proPresenterIP = document.getElementById("proPresenterIP").value;
+            ip_information.proPresenterPORT = document.getElementById("proPresenterPORT").value;
+            ip_information.resolumeIP = document.getElementById("resolumeIP").value;
+            ip_information.resolumePORT = document.getElementById("resolumePORT").value;
+
+            socket.emit("ip_update", ip_information);
+
+        }
     </script>
 </head>
 <body onLoad="onLoad();">
-    <h1>Web text viewer</h1>
+    <h1>Web Text Viewer Config</h1>
     <div class="slide_text"></div>
     
-    <button id="send_server">Send</button>
+    <div class="container">
+        <label for="proPresenterIP">ProPresenter Ip:</label><input type="text" id="proPresenterIP" value="" size="30" /><br />
+        <label for="proPresenterPORT">ProPresenter Port:</label><input type="text" id="proPresenterPORT" value="" size="30" /><br />
+        <label for="resolumeIP">Resolume IP:</label><input type="text" id="resolumeIP" value="" size="30" /><br />
+        <label for="resolumePORT">Resolume Port:</label><input type="text" id="resolumePORT" value="" size="30" /><br />
+        <button id="send_server">Send</button>
+    </div>
 
 </body>
 </html>

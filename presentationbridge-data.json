@@ -1,1 +1,1 @@
-{"proPresenter_ip":"192.168.10.10","proPresenter_port":"4000","resolume_ip":"192.168.10.10","resolume_port":"4000"}
+{"ip_information":{"proPresenterIP":"192.168.10.240","proPresenterPORT":"8080","resolumeIP":"192.168.10.255","resolumePORT":"8090"}}
