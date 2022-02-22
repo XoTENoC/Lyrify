@@ -12,7 +12,7 @@ const JSONdatafile = "presentationbridge-data.json";
 let ip_information_local = {}
 
 
-// const { Client, Message } = require('node-osc');
+const { Client, Message } = require('node-osc');
 
 const WebSocket = require('ws');
 
@@ -30,13 +30,72 @@ io.sockets.on("connection", function(socket) {
         io.emit("data", ip_information_local);
     })
 
+    // request for connecting the nodes
+    socket.on("connect_nodes", function() {
+        connect_nodes();
+    });
+
 });
 
 
-// setting up osc
-// const client = new Client('192.168.86.25', 7000);
+// setting up connection variables
+var client = null;
+var socket = null;
 
-app.get('/', function (req, res) {
+// opening sockets for connecting to nodes
+function connect_nodes() {
+    client = new Client(ip_information_local.resolumeIP, ip_information_local.resolumePORT);
+    socket = new WebSocket("ws://"+ ip_information_local.proPresenterIP +":" + ip_information_local.proPresenterPORT + "/remote");
+
+    socket.onopen = () => {
+    };
+
+    var slide_number = 0;
+
+    lyrics_received()
+}
+
+function lyrics_received(){
+    socket.onmessage = function (event) {
+        var msg = JSON.parse(event.data);
+        // console.log(msg);
+        
+        switch (msg.action) {
+            case "presentationCurrent":
+                console.log(slide_number);
+                x = msg.presentation.presentationSlideGroups[0].groupSlides[slide_number].slideText;
+                // document.getElementById("slide_text").innerHTML = x;
+
+                // assigning what the message is to resolume
+                var message = new Message('/composition/layers/4/clips/1/video/source/textgenerator/text/params/lines');
+                message.append(x);
+    
+                // sending the message to resolume
+                try{
+                    message.append(x);
+                    client.send(message, (err) => {
+                        if (err) {
+                            console.error(new Error(err));
+                        }
+                    });
+                }
+                catch(err){
+
+                }
+    
+                console.log(x);
+                break;
+            case "presentationTriggerIndex":
+                slide_number = msg.slideIndex;
+                // console.log(slide_number);
+                get_slide();
+                break;
+        }
+    };
+}
+
+
+app.get('/config', function (req, res) {
     res.sendFile(__dirname + '/views/index.html');
 })
 
@@ -138,21 +197,21 @@ http.listen(listenPort, function () {
 //     }
 // };
 
-// // Check if the webscocket is connected
-// function check_socket() {
-//     if (!socket) return err("SOCKET NOT CONNECTED");
-//     if (socket.readyState != 1) return err("SOCKET NOT READY");
-//     return true;
-// }
+// Check if the webscocket is connected
+function check_socket() {
+    if (!socket) return err("SOCKET NOT CONNECTED");
+    if (socket.readyState != 1) return err("SOCKET NOT READY");
+    return true;
+}
 
-// function emit(obj) {
-//     var json = JSON.stringify(obj);
-//     if (check_socket()) socket.send(json);
-//     else return err("SOCKET EMIT FAILED");
-// }
+function emit(obj) {
+    var json = JSON.stringify(obj);
+    if (check_socket()) socket.send(json);
+    else return err("SOCKET EMIT FAILED");
+}
 
-// function get_slide() {
-//     emit({ action: "presentationCurrent" });
-// }
+function get_slide() {
+    emit({ action: "presentationCurrent" });
+}
 
 loadFile();

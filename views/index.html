@@ -19,6 +19,10 @@
                 sending_ip_information();
             });
 
+            document.getElementById("connect_nodes").addEventListener("click", function (e) {
+                connecting_nodes();
+            });
+
             socket = io.connect();
 
             // asking the server to send data that is already there
@@ -49,13 +53,17 @@
             socket.emit("ip_update", ip_information);
 
         }
+
+        function connecting_nodes(){
+            socket.emit("connect_nodes");
+        }
     </script>
 </head>
 <body onLoad="onLoad();">
     
     <div class="container">
 
-        <h1>Web Text Viewer Config</h1>
+        <h1>Propresenter to Resolume converter</h1>
 
         <hr>
 
@@ -87,6 +95,7 @@
         </div>
 
         <button class="btn btn-primary" id="send_server">Send</button>
+        <button class="btn btn-success" id="connect_nodes">Connect</button>
     </div>
 
 </body>
