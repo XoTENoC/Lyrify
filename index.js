@@ -23,7 +23,11 @@ const WebSocket = require('ws');
 io.sockets.on("connection", function(socket) {
 
     socket.on("config_test", function(test_info) {
-        console.log(test_info);
+        proPresenter_ip = test_info[0];
+        proPresenter_port = test_info[1];
+        resolume_ip = test_info[2];
+        resolume_port = test_info[3];
+        saveFile();
     })
 
 });
@@ -77,9 +81,13 @@ function loadFile() //loads settings on first load of app
 function saveFile() //saves settings to a local storage file for later recalling
 {
     var myJson = {
-        ConfigPassword: ConfigPassword,
-        Bridges: Bridges
+        proPresenter_ip: proPresenter_ip,
+        proPresenter_port: proPresenter_port,
+        resolume_ip: resolume_ip,
+        resolume_port: resolume_port
     };
+
+    console.log(myJson);
 
     fs.writeFileSync(JSONdatafile, JSON.stringify(myJson), "utf8", function(error) {
         if (error)

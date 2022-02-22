@@ -9,6 +9,8 @@
     <script type="text/javascript">
 
         var socket = null;
+
+        let array = ['192.168.10.10', '4000','192.168.10.10', '4000'];
         
         function onLoad(){
             document.getElementById("send_server").addEventListener("click", function (e) {
@@ -19,7 +21,7 @@
         }
 
         function sending_to_server(){
-            socket.emit("config_test", "this is from client")
+            socket.emit("config_test", array);
         }
     </script>
 </head>
