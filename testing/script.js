@@ -1,5 +1,5 @@
 var socket;
-var host = "10.0.5.104";
+var host = "192.168.86.180";
 var port = "4444";
 var slide_number = 0;
 var pesentation_name;
@@ -34,7 +34,7 @@ function connect() {
 function listen() {
     socket.onmessage = function (event) {
         var msg = JSON.parse(event.data);
-        console.log(msg);
+        exportToJsonFile(msg);
         
         switch (msg.action) {
             case "presentationCurrent":
@@ -59,6 +59,18 @@ function emit(obj) {
 
 function get_slide() {
     emit({ action: "presentationCurrent" });
+}
+
+function exportToJsonFile(jsonData) {
+    let dataStr = JSON.stringify(jsonData);
+    let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+    let exportFileDefaultName = 'data.json';
+
+    let linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
 }
 
 setup();

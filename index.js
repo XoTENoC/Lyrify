@@ -47,6 +47,8 @@ function connect_nodes() {
     client = new Client(ip_information_local.resolumeIP, ip_information_local.resolumePORT);
     socket = new WebSocket("ws://"+ ip_information_local.proPresenterIP +":" + ip_information_local.proPresenterPORT + "/remote");
 
+    console.log("connecting");
+
     socket.onopen = () => {
     };
 
@@ -62,28 +64,40 @@ function lyrics_received(){
         
         switch (msg.action) {
             case "presentationCurrent":
-                console.log(slide_number);
-                x = msg.presentation.presentationSlideGroups[0].groupSlides[slide_number].slideText;
+
+                var presentationSlideGroups_num = 0;
+                var groupSlides = 0;
+
+                for(let i = 0; i < slide_number; i++){
+                    slideGroupObjects = msg.presentation.presentationSlideGroups[presentationSlideGroups_num];
+                }
+
+                x = msg.presentation.presentationSlideGroups[0].groupSlides;
+                console.log(x.length);
+
+                
+                // x = msg.presentation.presentationSlideGroups[0].groupSlides[slide_number].slideText;
                 // document.getElementById("slide_text").innerHTML = x;
 
+                // var one_line = x.replace(/(\r\n|\n|\r)/gm,' ');
+
+                // console.log(one_line);
+
                 // assigning what the message is to resolume
-                var message = new Message('/composition/layers/4/clips/1/video/source/textgenerator/text/params/lines');
-                message.append(x);
+                // var message = new Message('/composition/layers/4/clips/1/video/source/textgenerator/text/params/lines');
     
                 // sending the message to resolume
-                try{
-                    message.append(x);
-                    client.send(message, (err) => {
-                        if (err) {
-                            console.error(new Error(err));
-                        }
-                    });
-                }
-                catch(err){
+                // try{
+                //     message.append(one_line);
+                //     client.send(message, (err) => {
+                //         if (err) {
+                //             console.error(new Error(err));
+                //         }
+                //     });
+                // }
+                // catch(err){
 
-                }
-    
-                console.log(x);
+                // }
                 break;
             case "presentationTriggerIndex":
                 slide_number = msg.slideIndex;
