@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const defaultListenPort = 80;
+const defaultListenPort = 8000;
 
 const fs = require("fs");
 
