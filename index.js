@@ -55,6 +55,17 @@ function connect_nodes() {
     lyrics_received()
 }
 
+function getItem(presentationSlideGroups, targetItem) {
+    let itemCount = 0;
+    for (let group = 0; group < presentationSlideGroups.length; group++) {
+        const groupSlides = presentationSlideGroups[group].groupSlides;
+        for (let slide = 0; slide < groupSlides.length; slide++) {
+            itemCount++;
+            if (itemCount === targetItem) return groupSlides[slide];
+        }
+    }
+}
+
 
 function lyrics_received(){
     socket.onmessage = function (event) {
@@ -62,52 +73,29 @@ function lyrics_received(){
         
         switch (msg.action) {
             case "presentationCurrent":
-                console.log(slide_number);
 
-                var counter = 0;
-                var group = 0;
-                var slide = 0;
-                
-                x = msg.presentation.presentationSlideGroups;
+                var number_of_groups = msg.presentation.presentationSlideGroups.length;
 
+                var item = getItem(msg.presentation.presentationSlideGroups, slide_number);
+                console.log(item.slideText);
 
-                // Function to count the slides in the groups
-                while(counter != slide_number){
-                    slide = 0;
-                    var number_of_slides = parseInt(msg.presentation.presentationSlideGroups[group].groupSlides.length);
-                    while(number_of_slides > slide){
-                        counter++;
-                        slide++;
-                    }
-                    if (counter != slide_number){
-                        group++;
-                        counter++;
-                    }
+                //assigning what the message is to resolume
+                var message = new Message('/composition/layers/4/clips/1/video/source/textgenerator/text/params/lines');
+                message.append(item.slideText);
+    
+                // sending the message to resolume
+                try{
+                    message.append(item.slideText);
+                    client.send(message, (err) => {
+                        if (err) {
+                            console.error(new Error(err));
+                        }
+                    });
                 }
-                console.log(group + " " + slide);
-                // console.log(msg.presentation.presentationSlideGroups[group].groupSlides.length - 1);
-                // console.log(msg.presentation.presentationSlideGroups[group].groupSlides[slide].slideText);
-                //[0].groupSlides[slide_number].slideText;
-                // document.getElementById("slide_text").innerHTML = x;
+                catch(err){
 
-                // assigning what the message is to resolume
-                // var message = new Message('/composition/layers/4/clips/1/video/source/textgenerator/text/params/lines');
-                // message.append(x);
-    
-                // // sending the message to resolume
-                // try{
-                //     message.append(x);
-                //     client.send(message, (err) => {
-                //         if (err) {
-                //             console.error(new Error(err));
-                //         }
-                //     });
-                // }
-                // catch(err){
+                }
 
-                // }
-    
-                // console.log(x);
                 break;
             case "presentationTriggerIndex":
                 slide_number = msg.slideIndex;
