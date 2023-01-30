@@ -30,6 +30,11 @@ io.sockets.on("connection", function (socket) {
     socket.on("connect_nodes", function () {
         connect_nodes();
     });
+
+    // sending the text to the website.
+    socket.on("message", function (msg) {
+        io.emit("message", msg);
+    });
 });
 
 // setting up connection variables
@@ -68,55 +73,68 @@ function getItem(presentationSlideGroups, targetItem) {
     }
 }
 
+var cachedPresentation;
+
 function lyrics_received() {
     socket.onmessage = function (event) {
         var msg = JSON.parse(event.data);
 
+        console.log(msg);
+
         switch (msg.action) {
             case "presentationCurrent":
-                var number_of_groups =
-                    msg.presentation.presentationSlideGroups.length;
+                cachedPresentation = msg.presentation;
 
-                var item = getItem(
-                    msg.presentation.presentationSlideGroups,
-                    slide_number
-                );
-
-                //assigning what the message is to resolume
-                var message = new Message(
-                    "/composition/layers/4/clips/2/video/source/textgenerator/text/params/lines"
-                );
-                if (item) {
-                    message.append(item.slideText);
+                break;
+            case "presentationTriggerIndex":
+                if (
+                    !cachedPresentation ||
+                    cachedPresentation.presentationPath !== msg.presentationPath
+                ) {
+                    get_slide();
                 } else {
-                    console.log("Item not found");
-                }
+                    var number_of_groups =
+                        cachedPresentation.presentationSlideGroups.length;
 
-                // sending the message to resolume
-                try {
+                    var item = getItem(
+                        cachedPresentation.presentationSlideGroups,
+                        slide_number
+                    );
+
+                    //assigning what the message is to resolume
+                    var message = new Message(
+                        "/composition/layers/4/clips/2/video/source/textgenerator/text/params/lines"
+                    );
                     if (item) {
                         message.append(item.slideText);
                     } else {
                         console.log("Item not found");
                     }
-                    client.send(message, (err) => {
-                        if (err) {
-                            console.error(new Error(err));
-                        }
-                    });
-                } catch (err) {}
 
-                break;
-            case "presentationTriggerIndex":
-                slide_number = msg.slideIndex;
-                // console.log(slide_number);
-                get_slide();
+                    // sending the message to resolume
+                    try {
+                        if (item) {
+                            message.append(item.slideText);
+                        } else {
+                            console.log("Item not found");
+                        }
+                        client.send(message, (err) => {
+                            if (err) {
+                                console.error(new Error(err));
+                            }
+                        });
+                    } catch (err) {}
+                }
                 break;
         }
     };
 }
 
 app.get("/config", function (req, res) {
+    res.sendFile(__dirname + "/views/config.html");
+});
+
+app.get("/", function (req, res) {
     res.sendFile(__dirname + "/views/index.html");
 });
 
@@ -168,46 +186,6 @@ if (parseInt(cli_listenPort) !== "NaN") {
 http.listen(listenPort, function () {
     console.log("listening on *:" + listenPort);
 });
-
-// LISTIENING FOR PROPRESENTER
-
-// const socket = new WebSocket("ws://192.168.86.25:4444/remote");
-
-// socket.onopen = () => {
-// };
-
-// var slide_number = 0;
-
-// socket.onmessage = function (event) {
-//     var msg = JSON.parse(event.data);
-//     // console.log(msg);
-
-//     switch (msg.action) {
-//         case "presentationCurrent":
-//             console.log(slide_number);
-//             x = msg.presentation.presentationSlideGroups[0].groupSlides[slide_number].slideText;
-//             // document.getElementById("slide_text").innerHTML = x;
-
-//             // assigning what the message is to resolume
-//             var message = new Message('/composition/layers/4/clips/1/video/source/textgenerator/text/params/lines');
-//             message.append(x);
-
-//             // sending the message to resolume
-//             client.send(message, (err) => {
-//                 if (err) {
-//                     console.error(new Error(err));
-//                 }
-//             });
-
-//             console.log(x);
-//             break;
-//         case "presentationTriggerIndex":
-//             slide_number = msg.slideIndex;
-//             // console.log(slide_number);
-//             get_slide();
-//             break;
-//     }
-// };
 
 // Check if the webscocket is connected
 function check_socket() {
